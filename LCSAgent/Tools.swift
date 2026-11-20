@@ -244,14 +244,15 @@ enum ToolBox {
         var fds: [Int32] = [0, 0]
         guard pipe(&fds) == 0 else { return "pipe 创建失败" }
 
-        var actions = posix_spawn_file_actions_t()
+        var actions: posix_spawn_file_actions_t?
         posix_spawn_file_actions_init(&actions)
         posix_spawn_file_actions_adddup2(&actions, fds[1], STDOUT_FILENO)
         posix_spawn_file_actions_adddup2(&actions, fds[1], STDERR_FILENO)
         posix_spawn_file_actions_addclose(&actions, fds[0])
         posix_spawn_file_actions_addclose(&actions, fds[1])
 
-        var argv: [UnsafeMutablePointer<CChar>?] = ["/bin/sh", "-c", cmd].map { strdup($0) }
+        let parts: [String] = ["/bin/sh", "-c", cmd]
+        var argv: [UnsafeMutablePointer<CChar>?] = parts.map { strdup($0) }
         argv.append(nil)
         var envp: [UnsafeMutablePointer<CChar>?] = [nil]
 
