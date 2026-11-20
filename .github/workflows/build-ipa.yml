@@ -94,21 +94,40 @@ jobs:
           (cd out && zip -qry LCSAgent-unsigned.ipa Payload)
           ls -lh out/
 
-      - name: 打 TrollStore 版（ldid 注入 entitlements）
+      - name: 打 TrollStore 版（注入 entitlements）
+        continue-on-error: true
         run: |
-          set -euo pipefail
+          set -uo pipefail
           APP=$(find build/DerivedData/Build/Products -maxdepth 2 -name "*.app" -type d | grep -i iphoneos | head -1)
           APPNAME=$(basename "$APP")
           EXEC=$(/usr/libexec/PlistBuddy -c "Print CFBundleExecutable" "$APP/Info.plist")
           rm -rf troll && mkdir -p troll/Payload
           cp -R "$APP" "troll/Payload/$APPNAME"
-          if command -v ldid >/dev/null 2>&1; then
-            ldid -S entitlements.plist "troll/Payload/$APPNAME/$EXEC"
-            echo "=== 注入后的 entitlements ==="
-            ldid -e "troll/Payload/$APPNAME/$EXEC"
+
+          SIGNED=0
+          echo "=== 方案 A：codesign ad-hoc + entitlements ==="
+          if codesign --force --sign - --entitlements entitlements.plist --timestamp=none \
+               "troll/Payload/$APPNAME" 2>/tmp/codesign.err; then
+            echo "✅ codesign 成功"
+            codesign -d --entitlements :- "troll/Payload/$APPNAME" 2>/dev/null | head -40 || true
+            SIGNED=1
           else
-            echo "::warning::没有 ldid，TrollStore 版没有额外权限"
+            echo "codesign 失败："; cat /tmp/codesign.err || true
           fi
+
+          if [ "$SIGNED" = "0" ] && command -v ldid >/dev/null 2>&1; then
+            echo "=== 方案 B：ldid -S ==="
+            if ldid -S entitlements.plist "troll/Payload/$APPNAME/$EXEC" 2>/tmp/ldid.err; then
+              echo "✅ ldid 成功"; SIGNED=1
+            else
+              echo "ldid 失败："; cat /tmp/ldid.err || true
+            fi
+          fi
+
+          if [ "$SIGNED" = "0" ]; then
+            echo "::warning::两种注入都失败，TrollStore 版将不带额外权限（仍可安装，但 shell 走远程 runner）"
+          fi
+
           (cd troll && zip -qry ../out/LCSAgent-trollstore.ipa Payload)
           ls -lh out/
 
