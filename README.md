@@ -30,26 +30,19 @@ entitlements.plist  TrollStore 版注入的权限
 
 ## 1. 出包（Windows 上就能做）
 
-```bash
-cd projects/2026-11-19_lcs-ios-app
-git init -b main
-git add .
-git commit -m "init: LCSAgent iOS"
+仓库已建好：**https://github.com/szafx/lcs-agent-ios-app**（public，macOS runner 免费）
+
+Key 不在仓库里：构建时由 GitHub Secret `XC_API_KEY` 注入生成 `LCSAgent/BuiltinKey.swift`，
+所以流水线出的 IPA 内置 Key，仓库本身干净（公开也不泄露）。
+
+**一条命令：建仓库/推送/触发/等结果/拉 IPA**
+
+```powershell
+gh auth status          # 未登录先 gh auth login
+powershell -ExecutionPolicy Bypass -File scripts\ci-build.ps1
 ```
 
-建仓库（二选一）：
-
-```bash
-# A. 有 gh CLI
-gh repo create lcs-agent-ios --public --source=. --push
-
-# B. 网页建空仓库后
-git remote add origin https://github.com/<你的用户名>/lcs-agent-ios.git
-git push -u origin main
-```
-
-推上去后：**Actions → Build IPA → Run workflow**（push 到 main 也会自动跑）。
-约 2–3 分钟出两个 artifact：
+脚本会：检查登录 → 提交 → 建/复用仓库 → `gh workflow run` → `gh run watch` → 失败自动打 `--log-failed` → 成功把 IPA 拉到 `dist/`。
 
 | 产物 | 用途 |
 |---|---|

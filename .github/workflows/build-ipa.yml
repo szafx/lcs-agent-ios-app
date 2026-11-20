@@ -28,7 +28,7 @@ jobs:
       - name: 检出代码
         uses: actions/checkout@v4
 
-      - name: 注入内置 Key（Secret: XC_API_KEY）
+      - name: "注入内置 Key（Secret: XC_API_KEY）"
         run: |
           set -euo pipefail
           KEY='${{ secrets.XC_API_KEY }}'
