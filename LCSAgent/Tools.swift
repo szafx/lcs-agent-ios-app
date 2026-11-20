@@ -240,18 +240,46 @@ enum ToolBox {
 
     static func localShell(_ cmd: String) -> String {
 #if canImport(Darwin)
-        guard let fp = popen(cmd, "r") else {
-            return "shell 不可用：当前 App 没拿到 exec 权限。\n" +
+        // iOS SDK 把 popen/pclose 标成 __swift_unavailable，只能用 posix_spawn 自己接管道
+        var fds: [Int32] = [0, 0]
+        guard pipe(&fds) == 0 else { return "pipe 创建失败" }
+
+        var actions = posix_spawn_file_actions_t()
+        posix_spawn_file_actions_init(&actions)
+        posix_spawn_file_actions_adddup2(&actions, fds[1], STDOUT_FILENO)
+        posix_spawn_file_actions_adddup2(&actions, fds[1], STDERR_FILENO)
+        posix_spawn_file_actions_addclose(&actions, fds[0])
+        posix_spawn_file_actions_addclose(&actions, fds[1])
+
+        var argv: [UnsafeMutablePointer<CChar>?] = ["/bin/sh", "-c", cmd].map { strdup($0) }
+        argv.append(nil)
+        var envp: [UnsafeMutablePointer<CChar>?] = [nil]
+
+        var pid: pid_t = 0
+        let rc = posix_spawn(&pid, "/bin/sh", &actions, nil, argv, envp)
+
+        posix_spawn_file_actions_destroy(&actions)
+        for p in argv where p != nil { free(p) }
+        close(fds[1])
+
+        guard rc == 0 else {
+            close(fds[0])
+            return "无法创建进程（errno \(rc)）：沙盒限制。\n" +
                    "① 用 TrollStore 版 IPA 安装（带 platform-application 权限）；或\n" +
                    "② 设置里把执行模式改成「远程 runner」，连电脑上的 lcs_agent --web。"
         }
-        defer { pclose(fp) }
+
         var out = ""
-        var buf = [CChar](repeating: 0, count: 4096)
-        while fgets(&buf, Int32(buf.count), fp) != nil {
-            out += String(cString: buf)
+        var buf = [UInt8](repeating: 0, count: 4096)
+        while true {
+            let n = read(fds[0], &buf, buf.count)
+            if n <= 0 { break }
+            out += String(decoding: buf[0..<n], as: UTF8.self)
             if out.count > maxOutput { break }
         }
+        close(fds[0])
+        var status: Int32 = 0
+        _ = waitpid(pid, &status, 0)
         return out.isEmpty ? "(无输出)" : clip(out)
 #else
         return "当前平台不支持本地 shell（只在 iOS 上启用）"
