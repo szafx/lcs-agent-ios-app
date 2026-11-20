@@ -1,0 +1,17 @@
+[36m⚙ ls {"path": "."}[0m
+[2m   === C:\Users\szafx\Desktop\CodeSauce\projects\2026-11-19_xingchi-jb-ios16.2\work\live ===
+   a.py  16[0m
+[36m⚙ read {"limit": 100, "offset": 0, "path": "a.py"}[0m
+[2m   === C:\Users\szafx\Desktop\CodeSauce\projects\2026-11-19_xingchi-jb-ios16.2\work\live\a.py (1 行) ===
+       1| ﻿print(1 + 1)
+   [0m
+[36m⚙ shell {"cmd": "python a.py", "timeout": 120}[0m
+[2m   $ python a.py
+   [exit 0]
+   2
+
+   [0m
+[36m⚙ done {"summary": "a.py 已是 print(1 + 1)，未需改动。运行 python a.py，输出 2，退出码 0。"}[0m
+[2m   TASK_DONE: a.py 已是 print(1 + 1)，未需改动。运行 python a.py，输出 2，退出码 0。[0m
+
+[32m✔ a.py 已是 print(1 + 1)，未需改动。运行 python a.py，输出 2，退出码 0。[0m

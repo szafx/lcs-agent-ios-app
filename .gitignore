@@ -1,0 +1,9 @@
+build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+out/
+troll/
+dist/
+work/
+.DS_Store

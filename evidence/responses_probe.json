@@ -1,0 +1,342 @@
+{
+ "round1": {
+  "input_transformations": [],
+  "id": "resp_0c145cd11d62ddd2016b00504aaa2087d1ab249e76ae30a8a7",
+  "object": "response",
+  "created_at": 1795182667,
+  "completed_at": 1795182668,
+  "status": "completed",
+  "background": false,
+  "frequency_penalty": 0.0,
+  "presence_penalty": 0.0,
+  "moderation": null,
+  "model": "gpt-6.1-sol",
+  "access_programs": {
+   "cyber": "standard"
+  },
+  "previous_response_id": null,
+  "instructions": "你是编码智能体。需要执行命令就调用 shell 工具。",
+  "output": [
+   {
+    "type": "function_call",
+    "id": "fc_0c145cd11d62ddd2016b00504c624c87d1a582ec9e4d6e6825",
+    "call_id": "call_ed91033b71774e23b354c1926af8b4e5",
+    "name": "shell",
+    "arguments": "{\"cmd\":\"echo TOOLTEST\"}",
+    "status": "completed"
+   }
+  ],
+  "error": null,
+  "incomplete_details": null,
+  "tools": [
+   {
+    "type": "function",
+    "name": "shell",
+    "description": "执行一条 shell 命令",
+    "parameters": {
+     "properties": {
+      "cmd": {
+       "type": "string"
+      }
+     },
+     "required": [
+      "cmd"
+     ],
+     "type": "object",
+     "additionalProperties": false
+    },
+    "output_schema": null,
+    "strict": true
+   }
+  ],
+  "tool_choice": "auto",
+  "parallel_tool_calls": true,
+  "prompt_cache_key": "61d9922c-9a70-41a1-b72e-b4151b8f32e5",
+  "prompt_cache_retention": "24h",
+  "text": {
+   "format": {
+    "type": "text"
+   },
+   "verbosity": "medium"
+  },
+  "top_p": 1.0,
+  "top_logprobs": 0,
+  "temperature": 1.0,
+  "reasoning": {
+   "effort": "medium",
+   "summary": "detailed",
+   "context": "all_turns",
+   "mode": "standard"
+  },
+  "user": null,
+  "usage": {
+   "input_tokens": 87,
+   "input_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "cache_write_tokens_details": {
+     "ttl_30m_tokens": 0,
+     "ttl_12h_tokens": 0
+    }
+   },
+   "output_tokens": 19,
+   "output_tokens_details": {
+    "reasoning_tokens": 0
+   },
+   "total_tokens": 106,
+   "attribution": {
+    "items": {
+     "fc_0c145cd11d62ddd2016b00504c624c87d1a582ec9e4d6e6825": {
+      "input_tokens": 2,
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "output_tokens": 19
+     },
+     "msg_0c145cd11d62ddd2016b00504aaa5887d1bf3f037feb33a35d": {
+      "input_tokens": 16,
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "output_tokens": 0,
+      "content": [
+       {
+        "input_tokens": 16,
+        "cached_tokens": 0,
+        "cache_write_tokens": 0,
+        "output_tokens": 0
+       }
+      ]
+     }
+    },
+    "request_fields": {
+     "instructions": {
+      "input_tokens": 20,
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "output_tokens": 0
+     },
+     "tools": {
+      "input_tokens": 49,
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "output_tokens": 0
+     }
+    }
+   }
+  },
+  "tool_usage": {
+   "image_gen": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "total_tokens": 0,
+    "input_tokens_details": {
+     "text_tokens": 0,
+     "image_tokens": 0
+    },
+    "output_tokens_details": {
+     "image_tokens": 0,
+     "text_tokens": 0
+    }
+   },
+   "web_search": {
+    "num_requests": 0
+   }
+  },
+  "safety_identifier": "user-nuakoQkWdmRce7Jm4MBOt0nO",
+  "store": false,
+  "metadata": {},
+  "max_output_tokens": null,
+  "max_tool_calls": null,
+  "service_tier": "default",
+  "truncation": "disabled",
+  "image": {
+   "context_compression": "enabled"
+  }
+ },
+ "round2": {
+  "input_transformations": [],
+  "id": "resp_0c145cd11d62ddd2016b0050510f1487d1801c84d9f7fc8cdb",
+  "object": "response",
+  "created_at": 1795182673,
+  "completed_at": 1795182676,
+  "status": "completed",
+  "background": false,
+  "frequency_penalty": 0.0,
+  "presence_penalty": 0.0,
+  "moderation": null,
+  "model": "gpt-6.1-sol",
+  "access_programs": {
+   "cyber": "standard"
+  },
+  "previous_response_id": null,
+  "instructions": "你是编码智能体。需要执行命令就调用 shell 工具。",
+  "output": [
+   {
+    "type": "reasoning",
+    "id": "rs_0c145cd11d62ddd2016b005052489887d1a9a7ed3428b53528",
+    "summary": [],
+    "content": [],
+    "encrypted_content": "gAAAAABrAFBUoUZTkGzhgj-O3tzQUELKpZZcIaV5Gm1lNxNkOpRcPEmmJZu4bin-d9PTmmh0bSFPgDFCBnocuM-W9SPxaq5UoVBCSjaKoORe4B9WO1h30uZP210be7Bnl7lJzAhjzouL5eCl6UxScUAeX76uKzRxiHIV9BMv28DiJ58dKSrj99EenMglXTF8XIIcasKZeiVLR5f0cR1LWRLmK8LEnuOJlYZsPAnaJ3Q9i_OWFBjtaymapn4_3vipB0KFVj2tkX53j8Fk-lz2Anuh2H49XtpEtrvyds2AyF7It-bDGQTtXykWyMwxX6w4kNoBXHeHpDId4eaVE4CnivRJ73rjEHSLzutjY2rmHhuVgcWLp2I87sYpwch_UwPAx4dQhbMRXOrDSX_08M35Owkx-mbRQCJlLJRb-DnGbIzgUefXg_w6hG1Ecz6PmLuDWUtq_PbwUshRKeT82zoY6FZWZI3zEBjiD2M_SJ3FYbSv_JxKGGQYONCbOmfJ2DvJvt0TQ9TeJO5mNBAy_cUTiW2OLleCAzhYHiiN6sClJC_ezQiY_aDSvia1e6DmcWh3IHv2gNoQO0nsS_HrRz6e5hzge2CTvGnz2Utgbo04GI2iehpYqJm7auKdAS-cRDEPD2cY6TK_gOslg9q-QxdBCVoqqblqadVnXaKOVK34np0FUxzbSIeymblHhqZPPd5cI5GeEgtqJLA6eJZErKBtIBmGtsqlyV9Jr-N5IycPmrj92Qsu0xrWVgzpUhIlJUn3HPncPkUi0YdNb4iInNfNktY_UZ6xpKny78Qkn261W4UHaG7Csif8e67o3QPyRXHr2V4CNeauwYXe_7hVCxwG2rk9RFgbuawdEr73xaUTVdVyaMibYbaq1rHnaeRcgYqPUfVkfJ4GBeEOA45CAoxVpfHYQ3JiHxWDDkZoG1NYCoBMCTOgqKvfV3RosrnfC4yDhSR3TrBD0O6qZka6rd3klQDGDBMw4O0bMx-2r_dcTD3ONF5XXgLuHcc96dGFwpKc93ybgrEbEyMhUttfISaogOa6Rlck_RnL7nfRG-30dvqPk_5GSCHoiGF_UNKfGCtvZkMyEPYJsrekvDzIzxRFVFiMqINLcG8z6G59YTF97g3PyHRp_KHeO2umw4c4y1GpNUfVih6xitCPueXvOpzJRwqMmnXh4zFhAG2GvS1nmRWSTcApYNxQa1hnYdqb_nV8vF5AcBH-ZPQRKwEsu45oOx9wFGcxk2cFYv8hCQVf-dj1Y14B_WH1C4TGMTkVhxJs1t4r-KiZvkA_5e0hVEr60dAZrU5Es3csbxK0G8-l0rODkiNlAFx3XEGLOk88_K6n1uVu0tbxH-4cv9EOeRG96x5JmoxD01WCxNW5sCI3Sp5X_u_TGbq5OKTR-0Zrg6rr0NBdmd_MseT2aCwtaWyaAkqZVdDy-VVY1p2p2BMmltuDOoINktflbccV-0_yrvG5TQgzNkATkz4Ca0F2wrNz1X8BM2TK5nScCCv2zwQcNIm560kCUbi28Ghru9QYPGAL2iTxWrdqZVAbkAsNuFw1sS0KYG3p7R_zCOXEaOdgcLeZnscR95WEMuCKLEEi32F3PPN5opcmj2-rXQpsK88mnMoeKIdm72hFM1jfST_ezz0_Sfu03u9GzE7G5XO3X8l2Lax8n2Q4DUo_QxLEM4uW9SDWb3gEnlNPUeBJdmFxH3plOcPKPZbEyx6IBN0G2Lj9rauiOVUANTNjJ8R8JDQIjkglKwlrEGaZkWteaqRcuhjhFr3-XmTVoW4AVkd0x0xgazocsFKCkNWOH38HCMtqnIJZGI6Yil7EqZb_rwNvOu9rzMIA5fdRRbZtZ54DFw7Bb1ALtqyjKL_mv0KSbuz1fsnPdAqBSbgzN871YxPtY6upAgP9r9bNs6lCFUXiQemcHsspIM-uKTlJ-9nbaNE7MWpvaPw0brbdeoq3eP8hKtlSewy7hXgM6lZxh9TbYajEx3hTVeAfbKEfNVDJOfiz92nRbM0dcV1PSPM-LurUE3WaaqxxzJ7Mnhriz8A1_5-9SP1RCyGnn-WvULhryH0Bz-bduWbz2ZYi7JFOKhaoJirDf3aWIgm-BwG_1pUXf4V_ec-gNWkfDyoadql04gzpnZIJUlqSgzU9ZdR9WWu2FmkoVVL35yRhetTBJMkBZ4BL_H_j9HwALWMa28YqnY3lZ7ywxEWsriFHEKFQDUsfK8_U5RzoEDtBLBWuzaH07EHLy8O6HSNhSNbR2tKPw0rqUnxSQw6QsADa9LzjwJVtJRO3YgFw_AHHe3a_0izywE2-r8qBYF4k2FovXKbDwN5SVaHpQd0u5xSLeRMsf8gOBFBHHWN3sMalx7FfGHcCIz1izInycp-fALxck1YnHwKuaLhVnnoSJ60QlQkOH7rFjosfWkVEhgWqsnnSdYg1P6KeWF_MJrvXhcr2Cly0-gWzrrbtYIjE-rB6ZAowoiFCIoj1WpAN1Y9sAHiRky6kV8Xjo3W1V53HyEw2Ht1m3uah7KzpoRxHGflrCNiUT_VhPU8CPpGIa5p43pu_dri4aq9GqKTJoYTtgMf7JfewZ9S3QrlzecnJbqJakQh52V8ZDGcCtxOA41fj_B6nuQgGtez7hA_OrMkisSqPVFFHNaIPf7MPlzFkYFi9icVVWjPCszPuN1KQPNGzptuRC8a2e2uBHwj3jdrWljr1YTFBCWwEp33cCpjAknqMWDuOL27nvOUw7r3M2fWAKFdixpvTZcOPtmjyd6ykk1Z2aWugV2449hh0C7UjV8rkAWyuNli1HmSTnd41cCiFXl48_2ueDX-7BZsbnpNbM2BsfYYsCIjHQ4PNASrCYocHUcNkYxNg59ZlGlKBrLgy_6htEH1jXxCCVH0D5fyX80aq0hcpQcoGWEyWAhOHQFzOzxwPFZIQvfW6NukZ9GpoRtkl1HaRTtOirDlR8NBmvyaUGOCqQZN1N4wFKgMx37z2F46eo1ed8zFM3Fq_L4r6XgZJ-rkQmo1paQY8xVUWzTaJ"
+   },
+   {
+    "type": "message",
+    "id": "msg_0c145cd11d62ddd2016b0050543cc487d1957b24de25cc7551",
+    "role": "assistant",
+    "status": "completed",
+    "content": [
+     {
+      "type": "output_text",
+      "text": "请告诉我你需要完成的编码任务，例如修复报错、实现功能、分析代码或运行测试。",
+      "annotations": [],
+      "logprobs": []
+     }
+    ],
+    "phase": "final_answer"
+   }
+  ],
+  "error": null,
+  "incomplete_details": null,
+  "tools": [
+   {
+    "type": "function",
+    "name": "shell",
+    "description": "执行一条 shell 命令",
+    "parameters": {
+     "properties": {
+      "cmd": {
+       "type": "string"
+      }
+     },
+     "required": [
+      "cmd"
+     ],
+     "type": "object",
+     "additionalProperties": false
+    },
+    "output_schema": null,
+    "strict": true
+   }
+  ],
+  "tool_choice": "auto",
+  "parallel_tool_calls": true,
+  "prompt_cache_key": "9fce9322-d792-45f2-970b-8d6cdad817a9",
+  "prompt_cache_retention": "24h",
+  "text": {
+   "format": {
+    "type": "text"
+   },
+   "verbosity": "medium"
+  },
+  "top_p": 0.98,
+  "top_logprobs": 0,
+  "temperature": 1.0,
+  "reasoning": {
+   "effort": "medium",
+   "summary": "detailed",
+   "context": "all_turns",
+   "mode": "standard"
+  },
+  "user": null,
+  "usage": {
+   "input_tokens": 99,
+   "input_tokens_details": {
+    "cached_tokens": 0,
+    "cache_write_tokens": 0,
+    "cache_write_tokens_details": {
+     "ttl_30m_tokens": 0,
+     "ttl_12h_tokens": 0
+    }
+   },
+   "output_tokens": 51,
+   "output_tokens_details": {
+    "reasoning_tokens": 21
+   },
+   "total_tokens": 150,
+   "attribution": {
+    "items": {
+     "fc_0c145cd11d62ddd2016b00504c624c87d1a582ec9e4d6e6825": {
+      "input_tokens": 21,
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "output_tokens": 0
+     },
+     "fc_0c145cd11d62ddd2016b0050510fb487d1b52cbaedcd58d0f2": {
+      "input_tokens": 17,
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "output_tokens": 0,
+      "content": [
+       {
+        "input_tokens": 17,
+        "cached_tokens": 0,
+        "cache_write_tokens": 0,
+        "output_tokens": 0
+       }
+      ]
+     },
+     "msg_0c145cd11d62ddd2016b0050543cc487d1957b24de25cc7551": {
+      "input_tokens": 0,
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "output_tokens": 30,
+      "content": [
+       {
+        "input_tokens": 0,
+        "cached_tokens": 0,
+        "cache_write_tokens": 0,
+        "output_tokens": 30
+       }
+      ]
+     },
+     "rs_0c145cd11d62ddd2016b005052489887d1a9a7ed3428b53528": {
+      "input_tokens": 2,
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "output_tokens": 21
+     }
+    },
+    "request_fields": {
+     "instructions": {
+      "input_tokens": 20,
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "output_tokens": 0
+     },
+     "tools": {
+      "input_tokens": 39,
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "output_tokens": 0
+     }
+    }
+   }
+  },
+  "tool_usage": {
+   "image_gen": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "total_tokens": 0,
+    "input_tokens_details": {
+     "text_tokens": 0,
+     "image_tokens": 0
+    },
+    "output_tokens_details": {
+     "image_tokens": 0,
+     "text_tokens": 0
+    }
+   },
+   "web_search": {
+    "num_requests": 0
+   }
+  },
+  "safety_identifier": "user-ieorVH4VEqMa5vrCH93Td5RS",
+  "store": false,
+  "metadata": {},
+  "max_output_tokens": null,
+  "max_tool_calls": null,
+  "service_tier": "default",
+  "truncation": "disabled",
+  "image": {
+   "context_compression": "disabled"
+  }
+ }
+}

@@ -1,0 +1,121 @@
+name: Build IPA
+
+# 产出两个包：
+#   LCSAgent-unsigned.ipa   —— 给 Sideloadly / PlumeImpactor / 企业签 用
+#   LCSAgent-trollstore.ipa —— 用 ldid 注入 platform-application 等 entitlements，
+#                              TrollStore 安装后 App 内可直接 exec shell、读写 /var/mobile
+#
+# 配方沿用本机「手机远程控制 / scrcpy-mobile」那套跑通过的做法：
+#   macos-15 + xcodebuild -destination generic/platform=iOS + CODE_SIGNING_ALLOWED=NO
+#   → 找 .app → Payload/ → zip 成 ipa → upload-artifact
+# 区别只在于：本工程用 XcodeGen 从 project.yml 生成 .xcodeproj（Windows 上也能改工程）。
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 30
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 注入内置 Key（Secret: XC_API_KEY）
+        run: |
+          set -euo pipefail
+          KEY='${{ secrets.XC_API_KEY }}'
+          if [ -z "$KEY" ]; then
+            echo "::warning::没有配置 XC_API_KEY，构建出的 App 里不会内置 Key"
+          else
+            echo "已注入内置 Key（长度 ${#KEY}）"
+          fi
+          printf 'import Foundation\n\nenum BuiltinKey {\n    static let value = "%s"\n}\n' "$KEY" > LCSAgent/BuiltinKey.swift
+          cat LCSAgent/BuiltinKey.swift
+
+      - name: 环境信息
+        run: |
+          xcodebuild -version
+          xcrun --sdk iphoneos --show-sdk-version
+          sw_vers
+
+      - name: 安装 xcodegen / ldid
+        run: |
+          brew install xcodegen || brew upgrade xcodegen
+          brew install ldid || echo "ldid 装不上，TrollStore 版会退化成未签名版"
+          xcodegen --version
+          command -v ldid || true
+
+      - name: 生成 Xcode 工程
+        run: |
+          xcodegen generate
+          ls -la
+          xcodebuild -list -project LCSAgent.xcodeproj
+
+      - name: 语法/类型预检（失败信息比 xcodebuild 干净）
+        run: |
+          xcrun --sdk iphoneos swiftc -typecheck \
+            -sdk "$(xcrun --sdk iphoneos --show-sdk-path)" \
+            -target arm64-apple-ios16.0 \
+            LCSAgent/*.swift
+
+      - name: 编译（不签名）
+        run: |
+          xcodebuild \
+            -project LCSAgent.xcodeproj \
+            -scheme LCSAgent \
+            -configuration Release \
+            -destination "generic/platform=iOS" \
+            -derivedDataPath build/DerivedData \
+            -skipPackagePluginValidation \
+            -skipMacroValidation \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY= \
+            build
+
+      - name: 打包未签名 IPA
+        run: |
+          set -euo pipefail
+          APP=$(find build/DerivedData/Build/Products -maxdepth 2 -name "*.app" -type d | grep -i iphoneos | head -1)
+          echo "APP=$APP"
+          test -n "$APP"
+          /usr/libexec/PlistBuddy -c "Print CFBundleIdentifier" "$APP/Info.plist"
+          mkdir -p out
+          rm -rf out/Payload && mkdir -p out/Payload
+          cp -R "$APP" out/Payload/
+          (cd out && zip -qry LCSAgent-unsigned.ipa Payload)
+          ls -lh out/
+
+      - name: 打 TrollStore 版（ldid 注入 entitlements）
+        run: |
+          set -euo pipefail
+          APP=$(find build/DerivedData/Build/Products -maxdepth 2 -name "*.app" -type d | grep -i iphoneos | head -1)
+          APPNAME=$(basename "$APP")
+          EXEC=$(/usr/libexec/PlistBuddy -c "Print CFBundleExecutable" "$APP/Info.plist")
+          rm -rf troll && mkdir -p troll/Payload
+          cp -R "$APP" "troll/Payload/$APPNAME"
+          if command -v ldid >/dev/null 2>&1; then
+            ldid -S entitlements.plist "troll/Payload/$APPNAME/$EXEC"
+            echo "=== 注入后的 entitlements ==="
+            ldid -e "troll/Payload/$APPNAME/$EXEC"
+          else
+            echo "::warning::没有 ldid，TrollStore 版没有额外权限"
+          fi
+          (cd troll && zip -qry ../out/LCSAgent-trollstore.ipa Payload)
+          ls -lh out/
+
+      - name: 上传产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: LCSAgent-ipa
+          path: out/*.ipa
+          if-no-files-found: error
+          retention-days: 30
