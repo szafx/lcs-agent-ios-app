@@ -20,6 +20,24 @@ struct ToolCallInfo {
     var arguments: String
 }
 
+/// 状态栏用的实时统计
+struct UsageStats {
+    var contextTokens: Int = 0      // 最近一次请求的 input_tokens = 当前上下文占用
+    var outputTokens: Int = 0
+    var balance: Double? = nil      // 余额（USD）
+    var todayRequests: Int = 0
+    var todayCost: Double = 0
+    var updatedAt: Date? = nil
+}
+
+func num(_ v: Any?) -> Double? {
+    if let n = v as? NSNumber { return n.doubleValue }
+    if let d = v as? Double { return d }
+    if let i = v as? Int { return Double(i) }
+    if let s = v as? String { return Double(s) }
+    return nil
+}
+
 enum Builtin {
     static let base = "https://api.xingchiapi.com/v1"
     static let model = "gpt-6.1-sol"
@@ -61,6 +79,13 @@ enum Prefs {
             return v == 0 ? 30 : v
         }
         set { UserDefaults.standard.set(newValue, forKey: "max_steps") }
+    }
+    static var contextLimit: Int {
+        get {
+            let v = UserDefaults.standard.integer(forKey: "context_limit")
+            return v == 0 ? 200_000 : v
+        }
+        set { UserDefaults.standard.set(newValue, forKey: "context_limit") }
     }
 }
 

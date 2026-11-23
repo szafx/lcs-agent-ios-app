@@ -1,9 +1,22 @@
 # 小酱 Code for iOS
 
-> 状态：**WIP — 待 CI 首跑**。本机是 Windows，没有 Swift/macOS 工具链，`LCSAgent/*.swift` 只做了结构自检（括号配对、plist/YAML 解析通过），真正编译验证在 GitHub Actions 第一次运行时完成。Python 侧的 `/api/exec` 远程执行端点已本机实测通过。
+> 状态：**构建通过（2026-11-20）** —— GitHub Actions `macos-15` 上 `swiftc -typecheck` + `xcodebuild` + 打包全绿，出 2 个 IPA。
+> 运行记录：https://github.com/szafx/lcs-agent-ios-app/actions/runs/44751333048
 
-把手机版编码智能体做成真正的 App：SwiftUI 界面 + 工具调用循环 + GitHub Actions 出包。
+把手机版编码智能体做成真正的 App：SwiftUI 界面 + Responses API 工具循环 + GitHub Actions 出包。
 **不用 Mac**——工程由 `project.yml` 生成，编译在 GitHub 的 macOS runner 上跑。
+
+## 已产出的包
+
+| 文件 | 大小 | 说明 |
+|---|---|---|
+| `out/LCSAgent-trollstore.ipa` | 0.13 MB | codesign ad-hoc + `platform-application` / `no-sandbox` 等 entitlements |
+| `out/LCSAgent-unsigned.ipa` | 0.12 MB | 普通签名用 |
+
+校验结果（对真实产物做的）：
+- 架构 `arm64`（cputype `0x100000c`），`MinimumOSVersion 16.0`，bundle `com.lcs.agent`，版本 `1.0.0`
+- 二进制里能搜到内置 Key（Secret 注入生效）
+- TrollStore 版含 `_CodeSignature/CodeResources`，`platform-application` / `no-sandbox` 已在签名里
 
 ```
 LCSAgent/           Swift 源码（7 个文件，约 900 行）

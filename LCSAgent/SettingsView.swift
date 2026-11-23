@@ -11,6 +11,7 @@ struct SettingsView: View {
     @AppStorage("runner_token") private var runnerToken = ""
     @AppStorage("allow_system_paths") private var allowSystem = false
     @AppStorage("max_steps") private var maxSteps = 30
+    @AppStorage("context_limit") private var contextLimit = 200_000
 
     @State private var testResult = ""
     @State private var testing = false
@@ -75,6 +76,14 @@ struct SettingsView: View {
 
                 Section(header: Text("运行参数")) {
                     Stepper("最大步数：\(maxSteps)", value: $maxSteps, in: 5...80)
+                    HStack {
+                        Text("上下文上限")
+                        Spacer()
+                        TextField("200000", value: $contextLimit, format: .number)
+                            .keyboardType(.numberPad)
+                            .multilineTextAlignment(.trailing)
+                            .frame(width: 120)
+                    }
                 }
 
                 Section(header: Text("关于")) {

@@ -8,6 +8,7 @@ import Combine
 final class AgentEngine: ObservableObject {
     @Published var items: [ChatItem] = []
     @Published var busy: Bool = false
+    @Published var stats = UsageStats()
 
     /// Responses API 的上下文条目（message / function_call / function_call_output）
     private var input: [[String: Any]] = []
@@ -16,8 +17,23 @@ final class AgentEngine: ObservableObject {
 
     func reset() {
         input = []
+        stats.contextTokens = 0
+        stats.outputTokens = 0
         items = [ChatItem(role: .assistant,
                           text: "小酱 Code 就绪\n模型：\(Prefs.model)\n网关：\(Prefs.baseURL)")]
+    }
+
+    /// 拉一次余额 / 今日用量
+    func refreshStats() async {
+        guard let d = await API.usage() else { return }
+        var s = stats
+        s.balance = num(d["remaining"]) ?? num(d["balance"]) ?? s.balance
+        if let u = d["usage"] as? [String: Any], let today = u["today"] as? [String: Any] {
+            s.todayRequests = Int(num(today["requests"]) ?? 0)
+            s.todayCost = num(today["actual_cost"]) ?? 0
+        }
+        s.updatedAt = Date()
+        stats = s
     }
 
     func send(_ text: String) {
@@ -43,6 +59,13 @@ final class AgentEngine: ObservableObject {
                 let output = (resp["output"] as? [[String: Any]]) ?? []
                 let text = API.outputText(resp)
                 let calls = output.filter { ($0["type"] as? String) == "function_call" }
+
+                if let u = resp["usage"] as? [String: Any] {
+                    let inTok = Int(num(u["input_tokens"]) ?? 0)
+                    let outTok = Int(num(u["output_tokens"]) ?? 0)
+                    if inTok > 0 { stats.contextTokens = inTok }
+                    if outTok > 0 { stats.outputTokens = outTok }
+                }
 
                 if !text.isEmpty {
                     items.append(ChatItem(role: .assistant, text: text))
@@ -101,5 +124,6 @@ final class AgentEngine: ObservableObject {
             }
         }
         busy = false
+        await refreshStats()
     }
 }

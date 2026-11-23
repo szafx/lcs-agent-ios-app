@@ -88,6 +88,24 @@ enum API {
         return parts.joined()
     }
 
+    /// 余额 / 用量：GET {base}/usage（只认 sk Key，不需要控制台登录）
+    static func usage() async -> [String: Any]? {
+        guard let u = url(Prefs.baseURL, "/usage") else { return nil }
+        let key = Prefs.apiKey.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !key.isEmpty else { return nil }
+        var req = URLRequest(url: u)
+        req.timeoutInterval = 20
+        req.setValue("Bearer \(key)", forHTTPHeaderField: "Authorization")
+        req.setValue(userAgent, forHTTPHeaderField: "User-Agent")
+        do {
+            let (data, resp) = try await URLSession.shared.data(for: req)
+            guard let http = resp as? HTTPURLResponse, (200..<300).contains(http.statusCode) else { return nil }
+            return try JSONSerialization.jsonObject(with: data) as? [String: Any]
+        } catch {
+            return nil
+        }
+    }
+
     /// 测试连接：打网关 /health
     static func ping() async -> String {
         guard let u = rootURL(Prefs.baseURL) else { return "base_url 不合法" }

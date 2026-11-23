@@ -39,12 +39,16 @@ struct ContentView: View {
             }
             .safeAreaInset(edge: .bottom) { bottomBar }
             .sheet(isPresented: $showSettings) { SettingsView() }
-            .task { engine.reset() }
+            .task {
+                engine.reset()
+                await engine.refreshStats()
+            }
         }
     }
 
     private var bottomBar: some View {
         VStack(spacing: 6) {
+            statusBar
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
                     quick("看看 Documents 里有什么")
@@ -93,6 +97,47 @@ struct ContentView: View {
                 .clipShape(Capsule())
         }
         .buttonStyle(.plain)
+    }
+
+    // MARK: - 状态栏（模型 / 上下文 / 余额）
+
+    private var statusBar: some View {
+        HStack(spacing: 10) {
+            Text(Prefs.model)
+                .lineLimit(1)
+                .truncationMode(.middle)
+            Spacer(minLength: 4)
+            Text(ctxText)
+                .monospacedDigit()
+            Text("·").opacity(0.35)
+            Text(moneyText)
+                .monospacedDigit()
+            if engine.busy {
+                ProgressView().scaleEffect(0.6)
+            }
+        }
+        .font(.system(size: 11, design: .monospaced))
+        .foregroundColor(.secondary)
+        .padding(.horizontal, 14)
+        .padding(.vertical, 3)
+    }
+
+    private var ctxText: String {
+        let used = engine.stats.contextTokens
+        let limit = Prefs.contextLimit
+        if used <= 0 { return "ctx —/\(kfmt(limit))" }
+        return "ctx \(kfmt(used))/\(kfmt(limit))"
+    }
+
+    private var moneyText: String {
+        if let b = engine.stats.balance { return String(format: "$%.2f", b) }
+        return "$—"
+    }
+
+    private func kfmt(_ n: Int) -> String {
+        if n >= 1_000_000 { return String(format: "%.1fM", Double(n) / 1_000_000) }
+        if n >= 1_000 { return String(format: "%.1fk", Double(n) / 1_000) }
+        return "\(n)"
     }
 }
 
