@@ -38,6 +38,24 @@ func num(_ v: Any?) -> Double? {
     return nil
 }
 
+/// 模型 → 上下文窗口（拿不到官方元数据，用模型族推断；设置里可手动覆盖）
+enum ModelCatalog {
+    static let known: [(String, Int)] = [
+        ("gpt-6", 1_000_000),
+        ("gpt-5", 400_000),
+        ("codex", 400_000),
+    ]
+
+    static func contextLimit(for model: String) -> Int? {
+        let m = model.lowercased()
+        if m.hasPrefix("gpt-image") { return nil }      // 图像模型没有对话上下文
+        for (prefix, limit) in known where m.hasPrefix(prefix) {
+            return limit
+        }
+        return nil
+    }
+}
+
 enum Builtin {
     static let base = "https://api.xingchiapi.com/v1"
     static let model = "gpt-6.1-sol"
@@ -83,9 +101,17 @@ enum Prefs {
     static var contextLimit: Int {
         get {
             let v = UserDefaults.standard.integer(forKey: "context_limit")
-            return v == 0 ? 200_000 : v
+            return v == 0 ? 1_000_000 : v
         }
         set { UserDefaults.standard.set(newValue, forKey: "context_limit") }
+    }
+    /// 是否按模型名自动推断上限
+    static var autoContext: Bool {
+        get {
+            if UserDefaults.standard.object(forKey: "auto_context") == nil { return true }
+            return UserDefaults.standard.bool(forKey: "auto_context")
+        }
+        set { UserDefaults.standard.set(newValue, forKey: "auto_context") }
     }
 }
 

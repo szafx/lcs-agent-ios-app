@@ -122,9 +122,18 @@ struct ContentView: View {
         .padding(.vertical, 3)
     }
 
+    private var effectiveLimit: Int? {
+        if Prefs.autoContext, let auto = ModelCatalog.contextLimit(for: Prefs.model) {
+            return auto
+        }
+        return Prefs.contextLimit > 0 ? Prefs.contextLimit : nil
+    }
+
     private var ctxText: String {
         let used = engine.stats.contextTokens
-        let limit = Prefs.contextLimit
+        guard let limit = effectiveLimit else {
+            return used > 0 ? "ctx \(kfmt(used))" : "ctx —"
+        }
         if used <= 0 { return "ctx —/\(kfmt(limit))" }
         return "ctx \(kfmt(used))/\(kfmt(limit))"
     }

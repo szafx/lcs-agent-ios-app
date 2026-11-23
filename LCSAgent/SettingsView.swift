@@ -11,7 +11,15 @@ struct SettingsView: View {
     @AppStorage("runner_token") private var runnerToken = ""
     @AppStorage("allow_system_paths") private var allowSystem = false
     @AppStorage("max_steps") private var maxSteps = 30
-    @AppStorage("context_limit") private var contextLimit = 200_000
+    @AppStorage("context_limit") private var contextLimit = 1_000_000
+    @AppStorage("auto_context") private var autoContext = true
+
+    private var manualHint: String {
+        if let v = ModelCatalog.contextLimit(for: model) {
+            return v >= 1_000_000 ? "1M" : "\(v / 1000)k"
+        }
+        return "未知（关掉自动可手动填）"
+    }
 
     @State private var testResult = ""
     @State private var testing = false
@@ -74,15 +82,31 @@ struct SettingsView: View {
                     Toggle("允许系统绝对路径", isOn: $allowSystem)
                 }
 
-                Section(header: Text("运行参数")) {
+                Section(header: Text("运行参数"),
+                        footer: Text("自动推断：gpt-6 系列按 1M、gpt-5 系列按 400k；关掉可自己填。上限只影响状态栏显示，不会限制实际请求。")) {
                     Stepper("最大步数：\(maxSteps)", value: $maxSteps, in: 5...80)
-                    HStack {
-                        Text("上下文上限")
-                        Spacer()
-                        TextField("200000", value: $contextLimit, format: .number)
-                            .keyboardType(.numberPad)
-                            .multilineTextAlignment(.trailing)
-                            .frame(width: 120)
+                    Toggle("按模型自动推断上下文上限", isOn: $autoContext)
+                    if !autoContext {
+                        Picker("快速选择", selection: $contextLimit) {
+                            Text("200k").tag(200_000)
+                            Text("400k").tag(400_000)
+                            Text("1M").tag(1_000_000)
+                        }
+                        .pickerStyle(.segmented)
+                        HStack {
+                            Text("自定义")
+                            Spacer()
+                            TextField("1000000", value: $contextLimit, format: .number)
+                                .keyboardType(.numberPad)
+                                .multilineTextAlignment(.trailing)
+                                .frame(width: 120)
+                        }
+                    } else {
+                        HStack {
+                            Text("当前模型上限")
+                            Spacer()
+                            Text(manualHint).foregroundColor(.secondary)
+                        }
                     }
                 }
 

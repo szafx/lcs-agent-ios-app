@@ -97,15 +97,32 @@ powershell -ExecutionPolicy Bypass -File scripts\ci-build.ps1
 
 ---
 
-## 3.1 网关的三个坑（已在本项目里处理掉）
-
-| 坑 | 表现 | 处理 |
+## 3.1 网关的三个坑（已在本项目里处理掉）| 坑 | 表现 | 处理 |
 |---|---|---|
 | 只开 Responses API | `chat/completions` 直接 400 `chat_completions_disabled` | 全部走 `/v1/responses`，工具用扁平 schema，结果用 `function_call_output` 回灌 |
 | 客户端 allowlist | 403 `client_not_allowed`，提示只支持 Codex/Claude Code/Cursor… | 请求头带 `User-Agent: codex_cli_rs/...` + `originator: codex_cli_rs`（实测 6 种 UA 全部放行） |
 | 模型目录极小 | `/v1/models` 只有一条 | 默认 `gpt-6.1-sol`，换 Key 后重新拉一遍 |
 
 证据：`evidence/responses_probe.json`（两轮工具往返原文）、`evidence/live_run_responses.txt`（真实任务：ls→read→edit→shell→done，输出 2）
+
+---
+
+## 3.2 底部状态栏（实时额度 / 上下文）
+
+输入框上方一行等宽小字，仿 Claude Code 的状态栏：
+
+```
+gpt-6.1-sol                         ctx 12.9k/200k      ·   $3599.98
+```
+
+| 字段 | 来源 |
+|---|---|
+| 模型名 | `Prefs.model` |
+| `ctx 已用/上限` | 已用 = 最近一次 `/v1/responses` 返回的 `usage.input_tokens`（整段上下文实际占用）；上限 = 设置里的「上下文上限」，默认 200000 |
+| `$余额` | `GET /v1/usage`（用 sk Key，不需要控制台登录），取 `remaining` |
+
+刷新时机：App 启动、每轮对话结束各拉一次余额；上下文数字每次模型返回后立即更新。
+齿轮里可改「上下文上限」和「最大步数」。
 
 ---
 
